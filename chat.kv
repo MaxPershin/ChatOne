@@ -1,0 +1,115 @@
+#:import RiseInTransition kivy.uix.screenmanager.RiseInTransition
+#:import C kivy.utils.get_color_from_hex
+
+<TextInput>:
+	multiline: False
+	padding: [10, 0.3 * (self.height - self.line_height)]
+
+<ChatLabel@Label>:
+	color: C('#101010')
+	text_size: (self.width, None)
+	halign: 'left'
+	valign: 'top'
+	size_hint: (1, None)
+	height: self.texture_size[1]
+
+<ScrollView>:
+	canvas.before:
+		Color:
+			rgb: 1, 1, 1
+		Rectangle:
+			pos: self.pos
+			size: self.size
+
+ScreenManager:
+	transition: RiseInTransition()
+
+	Screen:
+		name: 'login'
+		canvas:
+			Color: 
+				rgb: 1, 1, 1
+
+			Rectangle:
+				source: 'c.png'
+				size: self.size
+				pos: self.pos
+
+		BoxLayout:
+			padding: [5, 5]
+			orientation: 'vertical'
+
+			FloatLayout:
+
+				Label:
+					pos_hint: {"center_x": .2,"center_y": .55}
+					size_hint: (1, .2)
+					text: 'Nickname:'
+
+				TextInput:
+					id: nickname
+					pos_hint: {"center_x": .5,"center_y": .55}
+					size_hint: (.4, .05)
+					text: ''
+					hint_text: 'Your Name'
+
+
+				Button:
+					size_hint: (.3, .2)
+					border: 0,0,0,0
+					pos_hint: {'center_x': .54, 'center_y': .48}
+					size_hint: (.9/3, .15/3)
+					background_normal: "arrow.png"
+					background_down: "arrow_p.png"
+					on_press: app.pull_chat()
+				
+
+
+	Screen:
+		id: chatroom
+		name: 'chatroom'
+		pos_hint: {"center_x": .5,"center_y": .5}
+
+		BoxLayout:
+			orientation: 'vertical'
+
+			BoxLayout:
+				size_hint: (1, .1)
+				orientation: 'horizontal'
+				Button:
+					size_hint: (1, 1)
+					text: 'Очистить'
+					on_press: app.disconnect()
+				Button:
+					size_hint: (1, 1)
+					text: 'Обновить'
+					on_press: app.easy_refresh()
+				Button:
+					id: online_button
+					size_hint: (1, 1)
+					text: 'online OFF'
+					on_press: app.online()
+
+			ScrollView:
+				ChatLabel:
+					id: chat_logs
+					text: ''
+					font_size: 32
+					markup: True
+
+			BoxLayout:
+				height: 90
+				orientation: 'horizontal'
+				padding: 0
+				size_hint: (1, None)
+
+				TextInput:
+					id: message
+					multiline: True
+					on_focus: app.focus(self)
+
+
+				Button:
+					text: 'Send'
+					size_hint: (.3, 1)
+					on_press: app.easy_send_msg()
