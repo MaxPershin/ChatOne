@@ -6,10 +6,12 @@ from kivy.clock import Clock
 import threading
 from kivy.uix.popup import Popup
 from kivy.uix.label import Label
+from datetime import datetime
 
 Config.set('graphics', 'resizable', False)
 Config.set('graphics', 'width', '414')
 Config.set('graphics', 'height', '736')
+
 
 auth_key = '45uG9hhwkc6A5EQcyxtlxGMzWlHlbzZnopejiwxK'
 url = 'https://chatone-39de9.firebaseio.com/.json'
@@ -92,8 +94,11 @@ class ChatApp(App):
 
 			self.glob = anwser
 
+			c_time = str(datetime.now().time()).split('.')[0].split(':')[0:2]
+			c_time = '{}:{}'.format(c_time[0], c_time[1])
+			currenttime = '[size=15sp][color=777b7e]{}[/color][/size]'.format(c_time)
 			self.temp = self.glob['source']
-			self.temp += self.nickname + ": " + self.root.ids.message.text.replace('"', "@#dq").replace('$', "@#dol").replace('\\', '@#esc').replace('\n', '@#nl') + '$'
+			self.temp += self.nickname + ": " + self.root.ids.message.text.replace('"', "@#dq").replace('$', "@#dol").replace('\\', '@#esc').replace('\n', '@#nl') + " " + currenttime + '$'
 			self.glob['source'] = self.temp
 			sender = '{' + '"source":' + ' "{}"'.format(self.temp) + '}'
 
@@ -121,7 +126,8 @@ class ChatApp(App):
 		except Exception as e:
 			self.popup('Sorry', 'Some errors has occured!')
 
-	def disconnect(self):
+	def disconnect(self, data):
+		data.text = '[color=#000000]I[/color]'
 		sender = '{' + '"source":' + ' ""' + '}'
 		to_database = json.loads(sender)
 		try:
@@ -163,13 +169,22 @@ class ChatApp(App):
 		my_thread = threading.Thread(target=self.refresh)
 		my_thread.start()
 
+	def color(self, data):
+		data.text = '[color=#009ddf]I[/color]'
+
+	def color2(self, data):
+		data.text = '[color=#009ddf]R[/color]'
+
+	def color3(self, data):
+		data.text = '[color=#000000]R[/color]'
+
 	def online(self):
 		if self.onliner == False:
 			self.onliner = True
-			self.root.ids.online_button.text = 'online ON'
+			self.root.ids.online_button.text = '[color=#009ddf]w[/color]'
 			Clock.schedule_interval(self.easy_refresh, 5)
 		else:
-			self.root.ids.online_button.text = 'online OFF'
+			self.root.ids.online_button.text = '[color=#000000]w[/color]'
 			self.onliner = False
 			Clock.unschedule(self.easy_refresh)
 

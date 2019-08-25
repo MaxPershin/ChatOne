@@ -76,25 +76,44 @@ ScreenManager:
 			BoxLayout:
 				size_hint: (1, .1)
 				orientation: 'horizontal'
+
 				Button:
 					size_hint: (1, 1)
-					text: 'Очистить'
-					on_press: app.disconnect()
+					font_name: 'mp.ttf'
+					font_size: '50sp'
+					background_normal: 'w_b.png'
+					background_down: 'w_b.png'
+					markup: True
+					text: '[color=#000000]I[/color]'
+					on_press: app.color(self)
+					on_release: app.disconnect(self)
 				Button:
 					size_hint: (1, 1)
-					text: 'Обновить'
-					on_press: app.easy_refresh()
+					font_name: 'mp.ttf'
+					font_size: '50sp'
+					background_normal: 'w_b.png'
+					background_down: 'w_b.png'
+					text: '[color=#000000]R[/color]'
+					markup: True
+					on_press: app.color2(self)
+					on_release: app.color3(self)
+					on_release: app.easy_refresh()
 				Button:
 					id: online_button
+					font_name: 'mp.ttf'
+					font_size: '50sp'
+					markup: True
+					background_normal: 'w_b.png'
+					background_down: 'w_b.png'
 					size_hint: (1, 1)
-					text: 'online OFF'
+					text: '[color=#000000]w[/color]'
 					on_press: app.online()
 
 			ScrollView:
 				ChatLabel:
 					id: chat_logs
 					text: ''
-					font_size: '32sp'
+					font_size: '26sp'
 					markup: True
 
 			BoxLayout:
@@ -110,6 +129,9 @@ ScreenManager:
 
 
 				Button:
-					text: 'Send'
-					size_hint: (.3, 1)
-					on_press: app.easy_send_msg()
+					font_name: 'mp.ttf'
+					background_normal: 'send_b.png'
+					font_size: '50sp'
+					text: 'b'
+					size_hint: (.35, 1)
+					on_release: app.easy_send_msg()
