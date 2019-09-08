@@ -1,12 +1,15 @@
 from kivy.app import App
 from kivy.config import Config
 import json
+from pusher import Pusher
+import pysher
 import requests
 from kivy.clock import Clock
 import threading
 from kivy.uix.popup import Popup
 from kivy.uix.label import Label
 from datetime import datetime
+from kivy.core.audio import SoundLoader
 
 Config.set('graphics', 'resizable', False)
 Config.set('graphics', 'width', '414')
@@ -16,19 +19,119 @@ Config.set('graphics', 'height', '736')
 auth_key = '45uG9hhwkc6A5EQcyxtlxGMzWlHlbzZnopejiwxK'
 url = 'https://chatone-39de9.firebaseio.com/.json'
 
+PUSHER_APP_ID='853308'
+PUSHER_APP_KEY='a7d3caa6f11e8e40b649'
+PUSHER_APP_SECRET='9618775036978ef089a7'
+PUSHER_APP_CLUSTER='eu'
+
 class ChatApp(App):
+
+	app_opened = True
+	pusher = None
+	channel = None
+	chatroom = None
+	clientPusher = None
+	user = None
+	users = {"max": "1",
+			"max2":'1',
+			"sovilaz": "1"}
+	chatrooms = ["general"]
+	sound_msg = SoundLoader.load('h.wav')
+	friend = False
+
+	def on_pause(self):
+		self.app_opened = False
+		return True
+
+	def on_resume(self):
+		self.app_opened = True
+		return True
+
+	def on_stop(self):
+		if self.channel:
+			message = '$im_out$'
+			self.pusher.trigger(self.chatroom, u'newmessage', {'user':self.user, 'message': message})
+		
+		print('I know I have to stop bruh')
+		return True
 
 	def build(self):
 		return 
 
-	def pull_chat(self):
+	def login(self):
 		if self.root.ids.nickname.text == '':
 			self.popup('Sorry', 'Type your name!')
 			return
-		self.onliner = False
-		try:
+
+		username = self.root.ids.nickname.text
+
+		if username in self.users:
+			self.user = username
+		else:
+			self.popup('Sorry', 'No such user')
+			return
+
+		self.chatroom = 'general'
+
+		self.initPusher()
+
+		self.root.current = 'chatroom'
+
+	def initPusher(self):
+		self.pusher = Pusher(app_id=PUSHER_APP_ID, key=PUSHER_APP_KEY, secret=PUSHER_APP_SECRET, cluster=PUSHER_APP_CLUSTER)
+		self.clientPusher = pysher.Pusher(PUSHER_APP_KEY, PUSHER_APP_CLUSTER)
+		self.clientPusher.connection.bind('pusher:connection_established', self.connectHandler)
+		self.clientPusher.connect()
+
+	def connectHandler(self, data):
+		self.channel = self.clientPusher.subscribe(self.chatroom)
+		self.channel.bind('newmessage', self.pusherCallback)
+		#saying hi to chatroom
+		message = '$im_in$'
+		self.pusher.trigger(self.chatroom, u'newmessage', {'user':self.user, 'message': message})
+
+	def pusherCallback(self, message):
+		message = json.loads(message)
+
+		#check if it is a service message
+		if message['user'] == self.user:
+			if message['message'] == '$im_in$' or message['message'] == '$im_out$' or message['message'] == '$me_too$':
+				return
+		else:
+			if message['message'] == '$im_in$':
+				message = '[size=20sp][b][color=A9A9A9]Пользователь {} вошел в сеть[/color][/b][/size]'.format(message['user'])
+				self.root.ids.chat_logs.text += message + '\n'
+				self.friend = True
+				message = '$me_too$'
+				self.pusher.trigger(self.chatroom, u'newmessage', {'user':self.user, 'message': message})
+				return
+			if message['message'] == '$im_out$':
+				message = '[size=20sp][b][color=A9A9A9]Пользователь {} вышел из сети[/color][/b][/size]'.format(message['user'])
+				self.root.ids.chat_logs.text += message + '\n'
+				self.friend = False
+				return
+			if message['message'] == '$me_too$':
+				message = '[size=20sp][b][color=A9A9A9]Ваш собеседник в сети[/color][/b][/size]'
+				self.root.ids.chat_logs.text += message + '\n'
+				self.friend = True
+				return
+
+
+		if message['user'] != self.user:
+			message = '[b][color=2980B9]{}:[/color][/b] {}'.format(message['user'], message['message'])
+			self.root.ids.chat_logs.text += message + '\n'
+			if self.app_opened:
+				self.sound_msg.play()
+			
+		else:
+			message = '[b][color=27db9f]{}:[/color][/b] {}'.format(message['user'], message['message'])
+			self.root.ids.chat_logs.text += message + '\n'
+			
+
+	#old-style loading
+	#def pull_chat(self):
+		'''try:
 			self.root.current = 'chatroom'
-			self.nickname = self.root.ids.nickname.text
 			request = requests.get(url + "?auth=" + auth_key)
 			anwser = request.json()
 			self.glob = anwser
@@ -45,73 +148,19 @@ class ChatApp(App):
 			
 		except:
 			self.popup('Sorry', 'No internet')
+'''
 
-	def mult_thread(self):
-		self.send_msg()
-		self.check_if_sent(self.previous_mgs)
-
-
-	def easy_send_msg(self, *args):
-		glob_thread = threading.Thread(target=self.mult_thread)
-		glob_thread.start()
-
-	def check_if_sent(self, msg):
+	def outsender(self):
+		message = self.root.ids.message.text
 		try:
-			request = requests.get(url + "?auth=" + auth_key)
-			anwser = request.json()
+			self.pusher.trigger(self.chatroom, u'newmessage', {'user':self.user, 'message': message})
 		except:
 			self.popup('Sorry', 'No internet connection')
-			return
-
-		self.glob = anwser
-
-		if msg.replace('"', "@#dq").replace('$', "@#dol").replace('\\', '@#esc').replace('\n', '@#nl') not in self.glob['source']:
-			self.temp = self.glob['source']
-			self.temp += self.nickname + ": " + msg + '$'
-			self.glob['source'] = self.temp
-
-			sender = '{' + '"source":' + ' "{}"'.format(self.glob['source']) + '}'
-			to_database = json.loads(sender)
-			try:
-				requests.patch(url=url, json=to_database)
-			except:
-				self.popup('Sorry', 'No internet connection')
-				return
-
-			self.root.ids.message.text = ''
-			self.pull_single()
-			self.easy_refresh()
+		self.root.ids.message.text = ''
 
 	def send_msg(self):
-			self.previous_mgs = self.root.ids.message.text
-
-			try:
-				request = requests.get(url + "?auth=" + auth_key)
-				anwser = request.json()
-			except:
-				self.popup('Sorry', 'No internet connection')
-				return
-
-			self.glob = anwser
-
-			c_time = str(datetime.now().time()).split('.')[0].split(':')[0:2]
-			c_time = '{}:{}'.format(c_time[0], c_time[1])
-			currenttime = '[size=15sp][color=777b7e]{}[/color][/size]'.format(c_time)
-			self.temp = self.glob['source']
-			self.temp += self.nickname + ": " + self.root.ids.message.text.replace('"', "@#dq").replace('$', "@#dol").replace('\\', '@#esc').replace('\n', '@#nl') + " " + currenttime + '$'
-			self.glob['source'] = self.temp
-			sender = '{' + '"source":' + ' "{}"'.format(self.temp) + '}'
-
-			to_database = json.loads(sender)
-
-			try:
-				requests.patch(url=url, json=to_database)
-			except:
-				self.popup('Sorry', 'No internet connection')
-				return
-
-			self.root.ids.message.text = ''
-			self.pull_single()
+		my_thread = threading.Thread(target=self.outsender)
+		my_thread.start()
 
 	def pull_single(self):
 		try:

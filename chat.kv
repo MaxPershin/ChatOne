@@ -51,7 +51,7 @@ ScreenManager:
 					pos_hint: {"center_x": .5,"center_y": .55}
 					size_hint: (.4, .05)
 					text: ''
-					hint_text: 'Your Name'
+					hint_text: 'Your Name:'
 
 
 				Button:
@@ -61,7 +61,7 @@ ScreenManager:
 					size_hint: (.9/3, .15/3)
 					background_normal: "arrow.png"
 					background_down: "arrow_p.png"
-					on_press: app.pull_chat()
+					on_press: app.login()
 				
 
 
@@ -134,4 +134,4 @@ ScreenManager:
 					font_size: '50sp'
 					text: 'b'
 					size_hint: (.35, 1)
-					on_release: app.easy_send_msg()
+					on_release: app.send_msg()

@@ -13,7 +13,7 @@ package.domain = org.chatapp
 source.dir = .
 
 # (list) Source files to include (let empty to include all the files)
-source.include_exts = py,png,jpg,kv,atlas,ttf,
+source.include_exts = py,png,jpg,kv,atlas,ttf,wav,
 
 # (list) List of inclusions using pattern matching
 #source.include_patterns = assets/*,images/*.png
@@ -36,7 +36,7 @@ version = 1.0.0
 
 # (list) Application requirements
 # comma seperated e.g. requirements = sqlite3,kivy
-requirements = kivy,openssl,android,requests
+requirements = kivy,openssl,android,requests,pusher,git+https://github.com/nlsdfnbch/Pysher.git,PyNaCl,websocket-client
 
 # (str) Custom source folders for requirements
 # Sets custom source for any requirements with recipes
