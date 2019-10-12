@@ -46,10 +46,10 @@ requirements = kivy,openssl,android,requests,pusher,git+https://github.com/nlsdf
 #garden_requirements = xcamera
 
 # (str) Presplash of the application
-presplash.filename = splash.png
+presplash.filename = src/img/splash.png
 
 # (str) Icon of the application
-icon.filename = icona.png
+icon.filename = src/img/icona.png
 
 # (str) Supported orientation (one of landscape, portrait or all)
 orientation = portrait

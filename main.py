@@ -36,7 +36,7 @@ class ChatApp(App):
 			"max2":'1',
 			"sovilaz": "1"}
 	chatrooms = ["general"]
-	sound_msg = SoundLoader.load('h.wav')
+	sound_msg = SoundLoader.load('src/h.wav')
 	friend = False
 
 	def on_pause(self):
@@ -121,7 +121,10 @@ class ChatApp(App):
 			message = '[b][color=2980B9]{}:[/color][/b] {}'.format(message['user'], message['message'])
 			self.root.ids.chat_logs.text += message + '\n'
 			if self.app_opened:
-				self.sound_msg.play()
+				try:
+					self.sound_msg.play()
+				except:
+					pass
 			
 		else:
 			message = '[b][color=27db9f]{}:[/color][/b] {}'.format(message['user'], message['message'])

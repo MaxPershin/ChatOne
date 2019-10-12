@@ -31,7 +31,7 @@ ScreenManager:
 				rgb: 1, 1, 1
 
 			Rectangle:
-				source: 'c.png'
+				source: 'src/img/c.png'
 				size: self.size
 				pos: self.pos
 
@@ -59,8 +59,8 @@ ScreenManager:
 					border: 0,0,0,0
 					pos_hint: {'center_x': .54, 'center_y': .48}
 					size_hint: (.9/3, .15/3)
-					background_normal: "arrow.png"
-					background_down: "arrow_p.png"
+					background_normal: "src/img/arrow.png"
+					background_down: "src/img/arrow_p.png"
 					on_press: app.login()
 				
 
@@ -79,20 +79,20 @@ ScreenManager:
 
 				Button:
 					size_hint: (1, 1)
-					font_name: 'mp.ttf'
+					font_name: 'src/mp.ttf'
 					font_size: '50sp'
-					background_normal: 'w_b.png'
-					background_down: 'w_b.png'
+					background_normal: 'src/img/w_b.png'
+					background_down: 'src/img/w_b.png'
 					markup: True
 					text: '[color=#000000]I[/color]'
 					on_press: app.color(self)
 					on_release: app.disconnect(self)
 				Button:
 					size_hint: (1, 1)
-					font_name: 'mp.ttf'
+					font_name: 'src/mp.ttf'
 					font_size: '50sp'
-					background_normal: 'w_b.png'
-					background_down: 'w_b.png'
+					background_normal: 'src/img/w_b.png'
+					background_down: 'src/img/w_b.png'
 					text: '[color=#000000]R[/color]'
 					markup: True
 					on_press: app.color2(self)
@@ -100,11 +100,11 @@ ScreenManager:
 					on_release: app.easy_refresh()
 				Button:
 					id: online_button
-					font_name: 'mp.ttf'
+					font_name: 'src/mp.ttf'
 					font_size: '50sp'
 					markup: True
-					background_normal: 'w_b.png'
-					background_down: 'w_b.png'
+					background_normal: 'src/img/w_b.png'
+					background_down: 'src/img/w_b.png'
 					size_hint: (1, 1)
 					text: '[color=#000000]w[/color]'
 					on_press: app.online()
@@ -129,8 +129,8 @@ ScreenManager:
 
 
 				Button:
-					font_name: 'mp.ttf'
-					background_normal: 'send_b.png'
+					font_name: 'src/mp.ttf'
+					background_normal: 'src/img/send_b.png'
 					font_size: '50sp'
 					text: 'b'
 					size_hint: (.35, 1)
