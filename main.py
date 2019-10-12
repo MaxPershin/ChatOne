@@ -1,28 +1,35 @@
 from kivy.app import App
 from kivy.config import Config
-import json
-from pusher import Pusher
-import pysher
-import requests
 from kivy.clock import Clock
-import threading
 from kivy.uix.popup import Popup
 from kivy.uix.label import Label
-from datetime import datetime
 from kivy.core.audio import SoundLoader
+
+import requests
+import pysher
+from pusher import Pusher
+import pysher
+
+import os
+import json
+import threading
+from datetime import datetime
+
 
 Config.set('graphics', 'resizable', False)
 Config.set('graphics', 'width', '414')
 Config.set('graphics', 'height', '736')
 
+with open("auth_key.json", "r") as f:
+	keys = json.load(f)
 
-auth_key = '45uG9hhwkc6A5EQcyxtlxGMzWlHlbzZnopejiwxK'
-url = 'https://chatone-39de9.firebaseio.com/.json'
+auth_key = keys['auth_key']
+url = keys['url']
 
-PUSHER_APP_ID='853308'
-PUSHER_APP_KEY='a7d3caa6f11e8e40b649'
-PUSHER_APP_SECRET='9618775036978ef089a7'
-PUSHER_APP_CLUSTER='eu'
+PUSHER_APP_ID = keys['PUSHER_APP_ID']
+PUSHER_APP_KEY = keys['PUSHER_APP_KEY']
+PUSHER_APP_SECRET = keys['PUSHER_APP_SECRET']
+PUSHER_APP_CLUSTER = keys['PUSHER_APP_CLUSTER']
 
 class ChatApp(App):
 
@@ -35,7 +42,6 @@ class ChatApp(App):
 	users = {"max": "1",
 			"max2":'1',
 			"sovilaz": "1"}
-	chatrooms = ["general"]
 	sound_msg = SoundLoader.load('src/h.wav')
 	friend = False
 
@@ -52,7 +58,6 @@ class ChatApp(App):
 			message = '$im_out$'
 			self.pusher.trigger(self.chatroom, u'newmessage', {'user':self.user, 'message': message})
 		
-		print('I know I have to stop bruh')
 		return True
 
 	def build(self):
@@ -131,28 +136,6 @@ class ChatApp(App):
 			self.root.ids.chat_logs.text += message + '\n'
 			
 
-	#old-style loading
-	#def pull_chat(self):
-		'''try:
-			self.root.current = 'chatroom'
-			request = requests.get(url + "?auth=" + auth_key)
-			anwser = request.json()
-			self.glob = anwser
-			whole_chat = anwser['source']
-			whole_chat = whole_chat.split('$')[:-1]
-			for each in whole_chat:
-				name, msg = each.split(':', 1)
-				if name != self.nickname:
-					each = ('[b][color=2980B9]{}:[/color][/b] {}'.format(name, msg.replace('@#dq', '"').replace("@#dol", '$').replace('@#esc', '\\').replace('@#nl', '\n')))
-				else:
-					each = ('[b][color=27db9f]{}:[/color][/b][/b] {}'.format(name, msg.replace('@#dq', '"').replace("@#dol", '$').replace('@#esc', '\\').replace('@#nl', '\n')))
-
-				self.root.ids.chat_logs.text += each + '\n'
-			
-		except:
-			self.popup('Sorry', 'No internet')
-'''
-
 	def outsender(self):
 		message = self.root.ids.message.text
 		try:
@@ -211,10 +194,11 @@ class ChatApp(App):
 			self.popup('Sorry', 'Some errors has occured!')
 
 	def focus(self, out):
-		if(out.focus):
-			self.root.ids.chatroom.pos_hint = {"center_x": .5,"center_y": .87}
-		else:
-			self.root.ids.chatroom.pos_hint = {"center_x": .5,"center_y": .5}
+		if os.name != 'posix':
+			if(out.focus):
+				self.root.ids.chatroom.pos_hint = {"center_x": .5,"center_y": .87}
+			else:
+				self.root.ids.chatroom.pos_hint = {"center_x": .5,"center_y": .5}
 
 	def easy_refresh(self, *args):
 
