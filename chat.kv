@@ -76,38 +76,7 @@ ScreenManager:
 			BoxLayout:
 				size_hint: (1, .1)
 				orientation: 'horizontal'
-
-				Button:
-					size_hint: (1, 1)
-					font_name: 'src/mp.ttf'
-					font_size: '50sp'
-					background_normal: 'src/img/w_b.png'
-					background_down: 'src/img/w_b.png'
-					markup: True
-					text: '[color=#000000]I[/color]'
-					on_press: app.color(self)
-					on_release: app.disconnect(self)
-				Button:
-					size_hint: (1, 1)
-					font_name: 'src/mp.ttf'
-					font_size: '50sp'
-					background_normal: 'src/img/w_b.png'
-					background_down: 'src/img/w_b.png'
-					text: '[color=#000000]R[/color]'
-					markup: True
-					on_press: app.color2(self)
-					on_release: app.color3(self)
-					on_release: app.easy_refresh()
-				Button:
-					id: online_button
-					font_name: 'src/mp.ttf'
-					font_size: '50sp'
-					markup: True
-					background_normal: 'src/img/w_b.png'
-					background_down: 'src/img/w_b.png'
-					size_hint: (1, 1)
-					text: '[color=#000000]w[/color]'
-					on_press: app.online()
+            #top button panel
 
 			ScrollView:
 				ChatLabel:
